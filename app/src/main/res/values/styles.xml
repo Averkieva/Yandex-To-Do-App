@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="CheckboxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:checked">false</item>
+    </style>
+
+    <style name="CheckboxStyle.high">
+        <item name="android:button">@drawable/high_checkbox</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.AppCompat.SmallComponent" parent="">
+        <item name="cornerSize">100%</item>
+    </style>
+
+    <style name="CustomDatePickerDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/color_blue</item>
+        <item name="android:textColorPrimary">@color/color_blue</item>
+        <item name="android:buttonBarButtonStyle">@style/MyDialogButton</item>
+    </style>
+
+    <style name="MyDialogButton" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/color_blue</item>
+    </style>
+</resources>

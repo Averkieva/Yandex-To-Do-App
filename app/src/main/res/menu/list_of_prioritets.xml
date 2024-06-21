@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/priority_high"
+        android:icon="@drawable/high_prioritet"
+        android:iconTint="@color/color_red"
+        android:title="@string/high" />
+    <item
+        android:id="@+id/priority_normal"
+        android:title="@string/no" />
+    <item
+        android:id="@+id/priority_low"
+        android:title="@string/low" />
+</menu>
