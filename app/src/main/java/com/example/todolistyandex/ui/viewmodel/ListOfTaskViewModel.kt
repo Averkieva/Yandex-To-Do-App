@@ -2,16 +2,19 @@ package com.example.todolistyandex.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.todolistyandex.data.model.ToDoItem
 import com.example.todolistyandex.data.repository.ToDoItemsRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
-class ListOfTaskViewModel(private val repository: ToDoItemsRepository) : ViewModel() {
+open class ListOfTaskViewModel(private val repository: ToDoItemsRepository) : ViewModel() {
 
     private val _showCompletedTasks = MutableStateFlow(true)
     val showCompletedTasks: StateFlow<Boolean> = _showCompletedTasks.asStateFlow()
 
-    val tasks: Flow<List<ToDoItem>> = combine(
+    open val tasks: Flow<List<ToDoItem>> = combine(
         repository.todoItems,
         showCompletedTasks
     ) { tasks, showCompleted ->
@@ -27,12 +30,10 @@ class ListOfTaskViewModel(private val repository: ToDoItemsRepository) : ViewMod
         _showCompletedTasks.value = !_showCompletedTasks.value
     }
 
-    fun deleteTask(taskId: Int) {
-        repository.deleteTodoItem(taskId)
-    }
-
-    fun updateTask(task: ToDoItem) {
-        repository.updateTodoItem(task)
+    open fun updateTaskCompletion(taskId: Int, isComplete: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateTaskCompletion(taskId, isComplete)
+        }
     }
 }
 
@@ -46,4 +47,5 @@ class ListOfTaskViewModelFactory(private val repository: ToDoItemsRepository) :
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
 

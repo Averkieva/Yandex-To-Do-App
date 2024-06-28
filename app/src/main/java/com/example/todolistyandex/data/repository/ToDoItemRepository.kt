@@ -2,56 +2,73 @@ package com.example.todolistyandex.data.repository
 
 import com.example.todolistyandex.data.model.ListOfTaskStatus
 import com.example.todolistyandex.data.model.ToDoItem
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
-class ToDoItemsRepository {
+open class ToDoItemsRepository {
 
     private val _todoItems = MutableStateFlow(initialTodoItems())
     private var currentMaxId = _todoItems.value.maxOfOrNull { it.id } ?: 0
 
-    val todoItems: StateFlow<List<ToDoItem>>
+    open val todoItems: StateFlow<List<ToDoItem>>
         get() = _todoItems
 
-    fun getTodoItemById(id: Int): Flow<ToDoItem?> {
+    open fun getTodoItemById(id: Int): Flow<ToDoItem?> {
         return todoItems.map { items -> items.find { it.id == id } }
     }
 
-    @Synchronized
-    fun addOrUpdateTodoItem(item: ToDoItem): ToDoItem {
-        val currentList = _todoItems.value.toMutableList()
-        val index = currentList.indexOfFirst { it.id == item.id }
+    open suspend fun addOrUpdateTodoItem(item: ToDoItem): ToDoItem {
+        return withContext(Dispatchers.IO) {
+            val currentList = _todoItems.value.toMutableList()
+            val index = currentList.indexOfFirst { it.id == item.id }
 
-        if (index >= 0) {
-            currentList[index] = item
-        } else {
-            val newItem = item.copy(id = ++currentMaxId)
-            currentList.add(newItem)
+            if (index >= 0) {
+                currentList[index] = item
+            } else {
+                val newItem = item.copy(id = ++currentMaxId)
+                currentList.add(newItem)
+                _todoItems.value = currentList
+                return@withContext newItem
+            }
+
             _todoItems.value = currentList
-            return newItem
-        }
-
-        _todoItems.value = currentList
-        return item
-    }
-
-
-    fun updateTodoItem(item: ToDoItem) {
-        val currentList = _todoItems.value.toMutableList()
-        val index = currentList.indexOfFirst { it.id == item.id }
-        if (index >= 0) {
-            currentList[index] = item
-            _todoItems.value = currentList
+            return@withContext item
         }
     }
 
-    @Synchronized
-    fun deleteTodoItem(id: Int) {
-        val currentList = _todoItems.value.toMutableList()
-        currentList.removeAll { it.id == id }
-        _todoItems.value = currentList
+    suspend fun updateTodoItem(item: ToDoItem) {
+        withContext(Dispatchers.IO) {
+            val currentList = _todoItems.value.toMutableList()
+            val index = currentList.indexOfFirst { it.id == item.id }
+            if (index >= 0) {
+                currentList[index] = item
+                _todoItems.value = currentList
+            }
+        }
+    }
+
+    open suspend fun deleteTodoItem(id: Int) {
+        withContext(Dispatchers.IO) {
+            val currentList = _todoItems.value.toMutableList()
+            currentList.removeAll { it.id == id }
+            _todoItems.value = currentList
+        }
+    }
+
+    open suspend fun updateTaskCompletion(taskId: Int, isComplete: Boolean) {
+        withContext(Dispatchers.IO) {
+            val currentList = _todoItems.value.toMutableList()
+            val index = currentList.indexOfFirst { it.id == taskId }
+            if (index >= 0) {
+                val item = currentList[index].copy(completeFlag = isComplete)
+                currentList[index] = item
+                _todoItems.value = currentList
+            }
+        }
     }
 
     private fun initialTodoItems(): MutableList<ToDoItem> {
