@@ -12,7 +12,7 @@ import com.example.todolistyandex.data.repository.ToDoItemsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class TaskViewModel(private val repository: ToDoItemsRepository) : ViewModel() {
+open class TaskViewModel(private val repository: ToDoItemsRepository) : ViewModel() {
 
     private var _taskItem = MutableLiveData<ToDoItem>()
     val taskItem: LiveData<ToDoItem> = _taskItem
@@ -40,17 +40,22 @@ class TaskViewModel(private val repository: ToDoItemsRepository) : ViewModel() {
 
     fun saveToDoItem() = viewModelScope.launch(Dispatchers.IO) {
         _taskItem.value?.let { task ->
-            repository.addOrUpdateTodoItem(task)
+            if (task.id == 0) {
+                repository.addOrUpdateTodoItem(task)
+            } else {
+                repository.updateTodoItem(task)
+            }
         }
     }
 
-    fun deleteTodoItem() = viewModelScope.launch(Dispatchers.Main) {
+    fun deleteTodoItem() = viewModelScope.launch(Dispatchers.IO) {
         _taskItem.value?.let { task ->
             repository.deleteTodoItem(task.id)
         }
     }
 
-    fun getTaskById(taskId: Int) = repository.getTodoItemById(taskId).asLiveData(Dispatchers.IO)
+    open fun getTaskById(taskId: Int) =
+        repository.getTodoItemById(taskId).asLiveData(Dispatchers.IO)
 }
 
 class TaskViewModelFactory(private val repository: ToDoItemsRepository) :

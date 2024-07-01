@@ -3,9 +3,6 @@
     <string name="my_business">Мои дела</string>
     <string name="placeholder_done_5">Выполнено — 5</string>
     <string name="new_task">Новое</string>
-    <string name="save_task">Сохранить</string>
-    <string name="what_to_do">Что надо сделать...</string>
-    <string name="importance">Важность</string>
     <string name="no">Нет</string>
     <string name="do_before">Сделать до</string>
     <string name="delete">Удалить</string>
@@ -13,4 +10,16 @@
     <string name="low">Низкий</string>
     <string name="done">Выполнено — %1$d</string>
     <string name="date">Дата</string>
+    <string name="add_task">add_task</string>
+    <string name="toggle_completed_tasks">toggle_completed_tasks</string>
+    <string name="save_task">СОХРАНИТЬ</string>
+    <string name="what_to_do">Что надо сделать…</string>
+    <string name="importance">Важность</string>
+    <string name="create_task">Создать задачу</string>
+    <string name="set_date">Установить дату</string>
+    <string name="calendar">Календарь</string>
+    <string name="info">info</string>
+    <string name="high_priority">high_priority</string>
+    <string name="low_priority">low_priority</string>
+
 </resources>
