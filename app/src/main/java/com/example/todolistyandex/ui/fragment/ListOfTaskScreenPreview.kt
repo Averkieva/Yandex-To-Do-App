@@ -3,6 +3,7 @@ package com.example.todolistyandex.ui.fragment
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.example.todolistyandex.ui.compose.listoftask.ListOfTaskScreen
 import com.example.todolistyandex.data.model.ListOfTaskStatus
 import com.example.todolistyandex.data.model.ToDoItem
 import com.example.todolistyandex.data.repository.ToDoItemsRepository
@@ -47,8 +48,7 @@ class PreviewRepository : ToDoItemsRepository() {
         return item
     }
 
-    override suspend fun deleteTodoItem(id: Int) {
-    }
+
 
     override suspend fun updateTaskCompletion(id: Int, isCompleted: Boolean) {
     }
