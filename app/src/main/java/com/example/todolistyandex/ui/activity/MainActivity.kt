@@ -14,7 +14,9 @@ import com.example.todolistyandex.data.network.NetworkReceiver
 import com.example.todolistyandex.data.repository.ToDoItemsRepository
 import com.example.todolistyandex.ui.navigation.AppNavigation
 import com.example.todolistyandex.ui.theme.CustomTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Main activity class for the application, setting up the ToDoItemsRepository and
@@ -22,19 +24,13 @@ import kotlinx.coroutines.launch
  * Compose UI with custom theming and navigation.
  */
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private lateinit var networkReceiver: NetworkReceiver
-    private lateinit var repository: ToDoItemsRepository
+    @Inject
+    lateinit var repository: ToDoItemsRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        repository = (applicationContext as MyApplication).repository
-        networkReceiver = NetworkReceiver {
-            lifecycleScope.launch {
-                repository.fetchTodoItems()
-            }
-        }
-        registerReceiver(networkReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
         setContent {
             CustomTheme {
@@ -46,13 +42,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(networkReceiver)
+        lifecycleScope.launch {
+            repository.retryPendingOperations()
+        }
     }
 }
+
 
 
 

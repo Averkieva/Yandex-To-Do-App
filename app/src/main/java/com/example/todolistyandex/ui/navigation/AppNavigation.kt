@@ -2,6 +2,7 @@ package com.example.todolistyandex.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -20,11 +21,7 @@ fun AppNavigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "listOfTask") {
         composable("listOfTask") {
-            val context = LocalContext.current
-            val repository = (context.applicationContext as MyApplication).repository
-            val taskViewModel: ListOfTaskViewModel = viewModel(
-                factory = ToDoViewModelFactory(repository)
-            )
+            val taskViewModel: ListOfTaskViewModel = hiltViewModel()
             ListOfTaskScreen(taskViewModel = taskViewModel, navController = navController)
         }
         composable(
@@ -36,19 +33,14 @@ fun AppNavigation() {
                 navArgument("taskPriority") { type = NavType.StringType; defaultValue = "NORMAL" }
             )
         ) { backStackEntry ->
-            val context = LocalContext.current
-            val repository = (context.applicationContext as MyApplication).repository
-            val taskViewModel: TaskViewModel = viewModel(
-                factory = ToDoViewModelFactory(repository)
-            )
+            val taskViewModel: TaskViewModel = hiltViewModel()
             CreateNewTaskScreen(
                 navController = navController,
                 taskViewModel = taskViewModel,
                 taskId = backStackEntry.arguments?.getInt("taskId"),
                 taskTitle = backStackEntry.arguments?.getString("taskTitle"),
-                taskPriority = backStackEntry.arguments?.getString("taskPriority"),
-
-                )
+                taskPriority = backStackEntry.arguments?.getString("taskPriority")
+            )
         }
     }
 }
