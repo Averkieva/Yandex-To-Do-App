@@ -12,19 +12,26 @@ import com.example.todolistyandex.data.model.ToDoItem
 import com.example.todolistyandex.data.network.request.TodoItemRequest
 import com.example.todolistyandex.data.network.response.TodoItemResponse
 import com.example.todolistyandex.data.network.response.TodoListResponse
+import com.example.todolistyandex.data.room.ToDoItemDao
+import com.example.todolistyandex.data.room.ToDoItemEntity
+import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 /**
  * Repository class for managing ToDoItems, providing methods to fetch, add, update,
@@ -32,7 +39,7 @@ import java.util.concurrent.TimeUnit
  * synchronization with a remote server.
  */
 
-open class ToDoItemsRepository {
+open class ToDoItemsRepository @Inject constructor(private val todoItemDao: ToDoItemDao) {
 
     private val _todoItems = MutableStateFlow<List<ToDoItem>>(emptyList())
     val todoItems: StateFlow<List<ToDoItem>> get() = _todoItems
@@ -41,6 +48,33 @@ open class ToDoItemsRepository {
 
     private val _fetchError = MutableStateFlow<String?>(null)
     val fetchError: StateFlow<String?> = _fetchError
+
+    private val pendingOperations = mutableListOf<suspend () -> Unit>()
+
+    init {
+        GlobalScope.launch {
+            todoItemDao.getTodoItems().collect { entities ->
+                _todoItems.value = entities.map { DataMapper.toDomain(it) }
+            }
+        }
+
+    }
+
+    private fun enqueuePendingOperation(operation: suspend () -> Unit) {
+        pendingOperations.add(operation)
+    }
+
+    suspend fun retryPendingOperations() {
+        val operationsToRetry = pendingOperations.toList()
+        pendingOperations.clear()
+        for (operation in operationsToRetry) {
+            try {
+                operation()
+            } catch (e: Exception) {
+                enqueuePendingOperation(operation)
+            }
+        }
+    }
 
     suspend fun fetchTodoItems() {
         try {
@@ -56,15 +90,35 @@ open class ToDoItemsRepository {
         }
     }
 
+    private suspend fun syncLocalAndRemoteItems(remoteItems: List<ToDoItemEntity>) {
+        val localItems = _todoItems.value.toMutableList()
+        val orderMap = localItems.mapIndexed { index, item -> item.uuid to index }.toMap()
+        todoItemDao.clearAll()
+        remoteItems.forEach { remoteItem ->
+            todoItemDao.addOrUpdateTodoItem(remoteItem)
+        }
+        _todoItems.value =
+            remoteItems.map { DataMapper.toDomain(it) }.sortedBy { orderMap[it.uuid] }
+    }
+
+
     private fun handleSuccessfulFetch(response: Response<TodoListResponse>) {
         val remoteItems = response.body()?.list ?: emptyList()
-        _todoItems.value = remoteItems.map { DataMapper.toDomain(it) }
+        GlobalScope.launch(Dispatchers.IO) {
+            syncLocalAndRemoteItems(remoteItems.map { DataMapper.toEntity(DataMapper.toDomain(it)) })
+        }
         revision = response.body()?.revision ?: 0
         _fetchError.value = null
     }
 
     private fun handleErrorResponse(code: Int) {
         _fetchError.value = ErrorHandler.getErrorMessage(code)
+    }
+
+    private fun saveItemsToLocalDatabase(items: List<ToDoItemEntity>) {
+        GlobalScope.launch(Dispatchers.IO) {
+            items.forEach { todoItemDao.addOrUpdateTodoItem(it) }
+        }
     }
 
     suspend fun retryFetchTodoItems() {
@@ -78,6 +132,7 @@ open class ToDoItemsRepository {
                 try {
                     tryAddOrUpdateItem(newItem)
                 } catch (e: Exception) {
+                    enqueuePendingOperation { tryAddOrUpdateItem(newItem) }
                     _fetchError.value =
                         "Ошибка добавления задачи. Проверьте интернет-соединение и попробуйте снова."
                 }
@@ -88,17 +143,21 @@ open class ToDoItemsRepository {
 
     private suspend fun updateLocalList(item: ToDoItem): ToDoItem {
         val currentList = _todoItems.value.toMutableList()
-        val index = currentList.indexOfFirst { it.id == item.id }
+        val index = currentList.indexOfFirst { it.uuid == item.uuid }
         return if (index >= 0) {
             currentList[index] = item
+            todoItemDao.addOrUpdateTodoItem(DataMapper.toEntity(item))
+            _todoItems.value = currentList
             item
         } else {
             val newItem = item.copy(id = getNextId(), uuid = UUID.randomUUID().toString())
             currentList.add(newItem)
+            todoItemDao.addOrUpdateTodoItem(DataMapper.toEntity(newItem))
             _todoItems.value = currentList
             newItem
         }
     }
+
 
     private fun getNextId(): Int {
         return _todoItems.value.maxOfOrNull { it.id }?.plus(1) ?: 1
@@ -123,7 +182,6 @@ open class ToDoItemsRepository {
         }
     }
 
-
     private suspend fun handleAddOrUpdateError(
         response: Response<TodoItemResponse>,
         request: TodoItemRequest
@@ -132,6 +190,7 @@ open class ToDoItemsRepository {
         fetchCurrentRevision()
         val retryResponse = RetrofitClient.api.addTodoItem(revision, request)
         if (!retryResponse.isSuccessful) {
+            // Handle error
         }
     }
 
@@ -140,6 +199,7 @@ open class ToDoItemsRepository {
         if (response.isSuccessful) {
             revision = response.body()?.revision ?: 0
         } else {
+            // Handle error
         }
     }
 
@@ -148,9 +208,12 @@ open class ToDoItemsRepository {
             val remoteItems = _todoItems.value.map { DataMapper.toRemote(it) }
             val response = RetrofitClient.api.updateTodoList(revision, remoteItems)
             if (response.isSuccessful) {
-                val updatedItems = response.body()?.list ?: emptyList()
-                _todoItems.value = updatedItems.map { DataMapper.toDomain(it) }
+                val updatedRemoteItems = response.body()?.list ?: emptyList()
+                val updatedLocalItems =
+                    updatedRemoteItems.map { DataMapper.toEntity(DataMapper.toDomain(it)) }
+                _todoItems.value = updatedLocalItems.map { DataMapper.toDomain(it) }
                 revision = response.body()?.revision ?: 0
+                saveItemsToLocalDatabase(updatedLocalItems)
                 _todoItems.value
             } else {
                 handleErrorResponse(response.code())
@@ -182,9 +245,11 @@ open class ToDoItemsRepository {
                 )
                 currentList[index] = updatedItem
                 _todoItems.value = currentList
+                todoItemDao.addOrUpdateTodoItem(DataMapper.toEntity(updatedItem))
                 try {
                     tryAddOrUpdateItem(updatedItem)
                 } catch (e: Exception) {
+                    enqueuePendingOperation { tryAddOrUpdateItem(updatedItem) }
                     _fetchError.value =
                         "Ошибка редактирования задачи. Проверьте интернет-соединение и попробуйте снова."
                 }
@@ -201,10 +266,12 @@ open class ToDoItemsRepository {
             val item = currentList.find { it.id == id }
             if (item != null) {
                 currentList.remove(item)
+                todoItemDao.deleteTodoItem(DataMapper.toEntity(item))
                 _todoItems.value = currentList
                 try {
                     tryDeleteItem(item)
                 } catch (e: Exception) {
+                    enqueuePendingOperation { tryDeleteItem(item) }
                     _fetchError.value =
                         "Ошибка удаления задачи. Проверьте интернет-соединение и попробуйте снова."
                 }
@@ -214,6 +281,7 @@ open class ToDoItemsRepository {
             }
         }
     }
+
 
     private suspend fun tryDeleteItem(item: ToDoItem) {
         withContext(NonCancellable) {
@@ -225,6 +293,7 @@ open class ToDoItemsRepository {
         }
     }
 
+
     open suspend fun updateTaskCompletion(taskId: Int, isComplete: Boolean) {
         withContext(Dispatchers.IO) {
             val currentList = _todoItems.value.toMutableList()
@@ -233,6 +302,7 @@ open class ToDoItemsRepository {
                 val item = currentList[index].copy(completeFlag = isComplete)
                 currentList[index] = item
                 _todoItems.value = currentList
+                todoItemDao.addOrUpdateTodoItem(DataMapper.toEntity(item))
             }
         }
     }
@@ -245,3 +315,5 @@ open class ToDoItemsRepository {
         _fetchError.value = null
     }
 }
+
+

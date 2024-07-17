@@ -4,16 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todolistyandex.data.model.ToDoItem
 import com.example.todolistyandex.data.repository.ToDoItemsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * ViewModel class for managing the state and data related to the list of tasks,
  * providing methods to fetch, filter, and update tasks, and handle completed task counts.
  */
 
-open class ListOfTaskViewModel(private val repository: ToDoItemsRepository) : ViewModel() {
+@HiltViewModel
+open class ListOfTaskViewModel @Inject constructor(
+    private val repository: ToDoItemsRepository
+) : ViewModel() {
 
     private val _showCompletedTasks = MutableStateFlow(true)
     val showCompletedTasks: StateFlow<Boolean> = _showCompletedTasks.asStateFlow()

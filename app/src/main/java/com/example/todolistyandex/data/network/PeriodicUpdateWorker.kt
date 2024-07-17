@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.todolistyandex.data.repository.ToDoItemsRepository
+import com.example.todolistyandex.ui.activity.MyApplication
 
 /**
  * CoroutineWorker class for performing periodic updates of the ToDoList,
@@ -16,7 +17,7 @@ class PeriodicUpdateWorker(
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
-        val repository = ToDoItemsRepository()
+        val repository = (applicationContext as MyApplication).repository
 
         return try {
             repository.updateTodoList()
@@ -26,3 +27,7 @@ class PeriodicUpdateWorker(
         }
     }
 }
+
+
+
+

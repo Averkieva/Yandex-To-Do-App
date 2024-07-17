@@ -8,10 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.todolistyandex.data.model.ListOfTaskStatus
 import com.example.todolistyandex.data.model.ToDoItem
 import com.example.todolistyandex.data.repository.ToDoItemsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * ViewModel class for managing the state and data of a single ToDoItem,
@@ -19,7 +21,10 @@ import kotlinx.coroutines.launch
  * from the repository, and handle fetch errors.
  */
 
-open class TaskViewModel(private val repository: ToDoItemsRepository) : ViewModel() {
+@HiltViewModel
+open class TaskViewModel @Inject constructor(
+    private val repository: ToDoItemsRepository
+) : ViewModel() {
 
     private var _taskItem = MutableLiveData<ToDoItem>()
     val taskItem: LiveData<ToDoItem> = _taskItem

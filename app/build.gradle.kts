@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("androidx.navigation.safeargs")
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -59,6 +61,7 @@ dependencies {
     implementation("androidx.databinding:databinding-runtime:8.5.0")
     implementation("androidx.compose.material3:material3-android:1.2.1")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("com.google.firebase:firebase-database-ktx:21.0.0")
     testImplementation("junit:junit:4.13.2")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -114,5 +117,17 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
 
     implementation ("androidx.work:work-runtime-ktx:2.7.1")
+
+    val room_version = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-compiler:2.51.1")
+
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
+
 
 }

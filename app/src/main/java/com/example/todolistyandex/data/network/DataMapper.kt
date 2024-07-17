@@ -3,6 +3,7 @@ package com.example.todolistyandex.data.network
 import com.example.todolistyandex.data.model.ListOfTaskStatus
 import com.example.todolistyandex.data.model.RemoteTodoItem
 import com.example.todolistyandex.data.model.ToDoItem
+import com.example.todolistyandex.data.room.ToDoItemEntity
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -66,5 +67,31 @@ object DataMapper {
                 null
             }
         }
+    }
+
+    fun toDomain(entity: ToDoItemEntity): ToDoItem {
+        return ToDoItem(
+            id = entity.id,
+            uuid = entity.uuid,
+            text = entity.text,
+            priority = entity.priority,
+            deadlineComplete = entity.deadlineComplete,
+            completeFlag = entity.completeFlag,
+            creationDate = entity.creationDate,
+            changeDate = entity.changeDate
+        )
+    }
+
+    fun toEntity(domain: ToDoItem): ToDoItemEntity {
+        return ToDoItemEntity(
+            id = domain.id,
+            uuid = domain.uuid,
+            text = domain.text,
+            priority = domain.priority,
+            deadlineComplete = domain.deadlineComplete,
+            completeFlag = domain.completeFlag,
+            creationDate = domain.creationDate,
+            changeDate = domain.changeDate
+        )
     }
 }

@@ -4,13 +4,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.todolistyandex.ui.viewmodel.ListOfTaskViewModel
 
 @Composable
 fun ListOfTaskScreen(
-    taskViewModel: ListOfTaskViewModel = viewModel(),
+    taskViewModel: ListOfTaskViewModel = hiltViewModel(),
     navController: NavController
 ) {
     val tasks by taskViewModel.tasks.collectAsState(initial = emptyList())
@@ -19,7 +20,7 @@ fun ListOfTaskScreen(
     val scrollState = rememberLazyListState()
     val fetchError by taskViewModel.fetchError.collectAsState()
 
-    if (fetchError != null) {
+    if (fetchError != null && tasks.isEmpty()) {
         ErrorScreen(fetchError = fetchError, retryAction = { taskViewModel.retryFetch() })
     } else {
         TaskListScaffold(

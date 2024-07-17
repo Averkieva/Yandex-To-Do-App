@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
-class PreviewRepository : ToDoItemsRepository() {
+class PreviewRepository : ToDoItemsRepository(FakeToDoItemDao()) {
     private val _tasks = MutableStateFlow(
         listOf(
             ToDoItem(
@@ -41,18 +41,17 @@ class PreviewRepository : ToDoItemsRepository() {
     )
 
     override fun getTodoItemById(id: Int): Flow<ToDoItem?> {
-        return todoItems.map { items -> items.find { it.id == id } }
+        return _tasks.map { items -> items.find { it.id == id } }
     }
 
     override suspend fun addOrUpdateTodoItem(item: ToDoItem): ToDoItem {
         return item
     }
 
-
-
     override suspend fun updateTaskCompletion(id: Int, isCompleted: Boolean) {
     }
 }
+
 
 @Composable
 fun PreviewListOfTaskScreen() {
