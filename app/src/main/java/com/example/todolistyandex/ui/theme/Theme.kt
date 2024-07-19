@@ -1,10 +1,12 @@
 package com.example.todolistyandex.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import com.example.todolistyandex.data.settings.ThemePreference
 
 val LocalCustomColors = staticCompositionLocalOf {
     CustomColors(
@@ -61,20 +63,27 @@ val darkColors = CustomColors(
 
 @Composable
 fun CustomTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themePreference: ThemePreference = ThemePreference.SYSTEM,
     content: @Composable () -> Unit
 ) {
-
-    val colors = when {
-        darkTheme -> darkColors
-        else -> lightColors
+    val darkTheme = when (themePreference) {
+        ThemePreference.LIGHT -> false
+        ThemePreference.DARK -> true
+        ThemePreference.SYSTEM -> isSystemInDarkTheme()
     }
+
+    val colors = if (darkTheme) darkColors else lightColors
 
     CompositionLocalProvider(
         LocalCustomColors provides colors,
-        content = content
-    )
+    ) {
+        MaterialTheme(
+            typography = AppTypography,
+            content = content
+        )
+    }
 }
+
 
 object CustomTheme {
     val colors: CustomColors

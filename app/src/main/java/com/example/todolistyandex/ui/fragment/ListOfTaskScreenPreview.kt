@@ -3,6 +3,7 @@ package com.example.todolistyandex.ui.fragment
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.example.todolistyandex.data.settings.ThemePreference
 import com.example.todolistyandex.ui.compose.listoftask.ListOfTaskScreen
 import com.example.todolistyandex.data.model.ListOfTaskStatus
 import com.example.todolistyandex.data.model.ToDoItem
@@ -63,7 +64,7 @@ fun PreviewListOfTaskScreen() {
 @Preview(showBackground = true)
 @Composable
 fun LightThemeListOfTaskScreenPreview() {
-    CustomTheme(darkTheme = false) {
+    CustomTheme(themePreference = ThemePreference.LIGHT) {
         PreviewListOfTaskScreen()
     }
 }
@@ -71,7 +72,7 @@ fun LightThemeListOfTaskScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun DarkThemeListOfTaskScreenPreview() {
-    CustomTheme(darkTheme = true) {
+    CustomTheme(themePreference = ThemePreference.DARK) {
         PreviewListOfTaskScreen()
     }
 }

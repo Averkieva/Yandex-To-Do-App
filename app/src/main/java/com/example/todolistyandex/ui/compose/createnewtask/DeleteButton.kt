@@ -1,54 +1,152 @@
 package com.example.todolistyandex.ui.compose.createnewtask
 
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.todolistyandex.R
 import com.example.todolistyandex.ui.theme.CustomTheme
 import com.example.todolistyandex.ui.viewmodel.TaskViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun DeleteButton(taskText: String, taskViewModel: TaskViewModel, navController: NavController) {
     val deleteColor = if (taskText.isEmpty()) CustomTheme.colors.labelDisable else Color.Red
+    val interactionSource = remember { MutableInteractionSource() }
+    val showSnackbar = remember { mutableStateOf(false) }
 
-    ConstraintLayout(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    if (showSnackbar.value) {
+        CountdownSnackbar(
+            message = "Удалить задачу $taskText",
+            onUndo = {
+                showSnackbar.value = false
+            },
+            onDismiss = {
+                taskViewModel.deleteTodoItem()
+                navController.popBackStack()
+            }
+        )
+    }
+
+    ConstraintLayout(modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp)) {
         val (deleteButton, deleteText) = createRefs()
 
         IconButton(
             onClick = {
-                taskViewModel.deleteTodoItem()
-                navController.popBackStack()
+                showSnackbar.value = true
             },
-            modifier = Modifier.constrainAs(deleteButton) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            }
+            modifier = Modifier
+                .constrainAs(deleteButton) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = rememberRipple(bounded = false, color = Color.Red)
+                ) {}
         ) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = null, tint = deleteColor)
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = null,
+                tint = deleteColor
+            )
         }
 
         Text(
             text = stringResource(R.string.delete),
             color = deleteColor,
-            fontSize = 16.sp,
-            modifier = Modifier.constrainAs(deleteText) {
-                start.linkTo(deleteButton.end, margin = 8.dp)
-                top.linkTo(deleteButton.top)
-                bottom.linkTo(deleteButton.bottom)
-            }
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .constrainAs(deleteText) {
+                    start.linkTo(deleteButton.end, margin = 8.dp)
+                    top.linkTo(deleteButton.top)
+                    bottom.linkTo(deleteButton.bottom)
+                }
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = rememberRipple(bounded = true, color = deleteColor)
+                ) {}
         )
+    }
+}
+
+@Composable
+fun CountdownSnackbar(
+    message: String,
+    onUndo: () -> Unit,
+    onDismiss: () -> Unit,
+    countdownTime: Int = 5
+) {
+    val scaffoldState = rememberScaffoldState()
+    val countdown = remember { mutableStateOf(countdownTime) }
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarVisible = remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        while (countdown.value > 0) {
+            delay(1000L)
+            countdown.value -= 1
+        }
+        if (countdown.value == 0) {
+            onDismiss()
+            snackbarVisible.value = false
+        }
+    }
+
+    AnimatedVisibility(
+        visible = snackbarVisible.value,
+        enter = slideInVertically(initialOffsetY = { it }),
+        exit = slideOutVertically(targetOffsetY = { it })
+    ) {
+        Snackbar(
+            action = {
+                TextButton(onClick = {
+                    onUndo()
+                    snackbarVisible.value = false
+                }) {
+                    Text(
+                        text = "Отменить",
+                        color = CustomTheme.colors.colorBlue,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            },
+            containerColor = CustomTheme.colors.backPrimary,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text(
+                text = "$message (${countdown.value})",
+                color = CustomTheme.colors.labelPrimary,
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
     }
 }

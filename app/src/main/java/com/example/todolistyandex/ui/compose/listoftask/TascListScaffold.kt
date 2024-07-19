@@ -25,7 +25,8 @@ fun TaskListScaffold(
     completedTaskCount: Int,
     scrollState: LazyListState,
     navController: NavController,
-    taskViewModel: ListOfTaskViewModel
+    taskViewModel: ListOfTaskViewModel,
+    modifier: Modifier = Modifier
 ) {
     Scaffold(
         floatingActionButton = {

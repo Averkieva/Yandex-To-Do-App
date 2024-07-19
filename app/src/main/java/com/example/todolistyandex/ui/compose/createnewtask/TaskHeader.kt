@@ -6,13 +6,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.todolistyandex.R
@@ -36,7 +36,11 @@ fun TaskHeader(navController: NavController, taskText: String, taskViewModel: Ta
                 top.linkTo(parent.top)
             }
         ) {
-            Icon(imageVector = Icons.Default.Close, contentDescription = null, tint = CustomTheme.colors.labelPrimary)
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = null,
+                tint = CustomTheme.colors.labelPrimary
+            )
         }
 
         TextButton(
@@ -53,7 +57,11 @@ fun TaskHeader(navController: NavController, taskText: String, taskViewModel: Ta
                 bottom.linkTo(closeButton.bottom)
             }
         ) {
-            Text(text = stringResource(R.string.save_task), color = BlueDark, fontSize = 14.sp)
+            Text(
+                text = stringResource(R.string.save_task),
+                color = BlueDark,
+                style = MaterialTheme.typography.labelMedium
+            )
         }
     }
 }

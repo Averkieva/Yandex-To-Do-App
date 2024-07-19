@@ -21,5 +21,6 @@
     <string name="info">info</string>
     <string name="high_priority">high_priority</string>
     <string name="low_priority">low_priority</string>
+    <string name="choose_priority">Выбрать приоритет</string>
 
 </resources>
