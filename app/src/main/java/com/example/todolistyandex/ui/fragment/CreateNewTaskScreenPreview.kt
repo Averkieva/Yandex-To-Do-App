@@ -5,6 +5,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.navigation.compose.rememberNavController
+import com.example.todolistyandex.data.settings.ThemePreference
 import com.example.todolistyandex.data.model.ListOfTaskStatus
 import com.example.todolistyandex.data.model.ToDoItem
 import com.example.todolistyandex.data.repository.ToDoItemsRepository
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.flow
 
 @Composable
 fun PreviewCreateNewTaskScreenLight() {
-    CustomTheme(darkTheme = false) {
+    CustomTheme(themePreference = ThemePreference.LIGHT) {
         CreateNewTaskScreen(
             navController = rememberNavController(),
             taskViewModel = FakeTaskViewModel(),
@@ -30,7 +31,7 @@ fun PreviewCreateNewTaskScreenLight() {
 
 @Composable
 fun PreviewCreateNewTaskScreenDark() {
-    CustomTheme(darkTheme = true) {
+    CustomTheme(themePreference = ThemePreference.DARK) {
         CreateNewTaskScreen(
             navController = rememberNavController(),
             taskViewModel = FakeTaskViewModel(),

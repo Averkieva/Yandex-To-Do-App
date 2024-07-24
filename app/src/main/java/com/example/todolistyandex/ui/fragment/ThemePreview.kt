@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.todolistyandex.data.settings.ThemePreference
 import com.example.todolistyandex.ui.theme.CustomColors
 import com.example.todolistyandex.ui.theme.CustomTheme
 import com.example.todolistyandex.ui.theme.darkColors
@@ -56,7 +57,7 @@ fun ColorBox(color: Color, label: String) {
 @Preview(showBackground = true)
 @Composable
 fun LightThemeColorPalettePreview() {
-    CustomTheme(darkTheme = false) {
+    CustomTheme(themePreference = ThemePreference.LIGHT) {
         ColorPalettePreview(colors = lightColors)
     }
 }
@@ -64,7 +65,7 @@ fun LightThemeColorPalettePreview() {
 @Preview(showBackground = true)
 @Composable
 fun DarkThemeColorPalettePreview() {
-    CustomTheme(darkTheme = true) {
+    CustomTheme(themePreference = ThemePreference.DARK) {
         ColorPalettePreview(colors = darkColors)
     }
 }
@@ -72,7 +73,7 @@ fun DarkThemeColorPalettePreview() {
 @Preview(showBackground = true)
 @Composable
 fun LightThemeTypographyPreview() {
-    CustomTheme(darkTheme = false) {
+    CustomTheme(themePreference = ThemePreference.LIGHT) {
         TypographyPreview()
     }
 }
@@ -80,7 +81,7 @@ fun LightThemeTypographyPreview() {
 @Preview(showBackground = true)
 @Composable
 fun DarkThemeTypographyPreview() {
-    CustomTheme(darkTheme = true) {
+    CustomTheme(themePreference = ThemePreference.DARK) {
         TypographyPreview()
     }
 }

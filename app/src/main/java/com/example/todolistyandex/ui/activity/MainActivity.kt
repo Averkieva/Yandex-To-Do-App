@@ -1,16 +1,16 @@
 package com.example.todolistyandex.ui.activity
 
-import android.content.IntentFilter
-import android.net.ConnectivityManager
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
-import com.example.todolistyandex.data.network.NetworkReceiver
+import com.example.todolistyandex.data.settings.PreferencesManager
 import com.example.todolistyandex.data.repository.ToDoItemsRepository
 import com.example.todolistyandex.ui.navigation.AppNavigation
 import com.example.todolistyandex.ui.theme.CustomTheme
@@ -29,25 +29,31 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var repository: ToDoItemsRepository
 
+    @Inject
+    lateinit var preferencesManager: PreferencesManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            CustomTheme {
+            val themePreference = preferencesManager.themePreferenceFlow.collectAsState(initial = preferencesManager.themePreference).value
+            CustomTheme(themePreference) {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     AppNavigation()
                 }
             }
         }
+
         lifecycleScope.launch {
             repository.retryPendingOperations()
         }
     }
+    fun makeIntent(context: Context?): Intent {
+        return Intent(context, MainActivity::class.java)
+    }
 }
-
 
 
 

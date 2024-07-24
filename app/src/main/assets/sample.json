@@ -1,0 +1,196 @@
+{
+  "card": {
+    "log_id": "card",
+    "states": [
+      {
+        "state_id": 0,
+        "div": {
+          "type": "container",
+          "orientation": "vertical",
+          "margins": {
+            "left": 24,
+            "right": 24,
+            "top": 24,
+            "bottom": 24
+          },
+          "content_alignment_vertical": "center",
+          "items": [
+            {
+              "type": "separator",
+              "height": {
+                "type": "fixed",
+                "value": 80
+              },
+              "alpha": 0
+            },
+            {
+              "type": "container",
+              "orientation": "horizontal",
+              "width": {
+                "type": "match_parent"
+              },
+              "content_alignment_horizontal": "center",
+              "items": [
+                {
+                  "type": "separator",
+                  "width": {
+                    "type": "fixed",
+                    "value": 60
+                  },
+                  "alpha": 0
+                },
+                {
+                  "type": "image",
+                  "image_url": "https://вебджем.рф/800/600/https/static.tildacdn.com/tild6634-3763-4136-b665-653636303131/checked-checkbox.png?raw=true",
+                  "aspect": {
+                    "ratio": 1
+                  },
+                  "width": {
+                    "type": "fixed",
+                    "value": 120
+                  },
+                  "height": {
+                    "type": "fixed",
+                    "value": 120
+                  },
+                  "alignment_horizontal": "center",
+                  "content_alignment_vertical": "top"
+                },
+                {
+                  "type": "separator",
+                  "width": {
+                    "type": "fixed",
+                    "value": 60
+                  },
+                  "alpha": 0
+                }
+              ]
+            },
+            {
+              "type": "separator",
+              "height": {
+                "type": "fixed",
+                "value": 30
+              },
+              "alpha": 0
+            },
+            {
+              "type": "container",
+              "orientation": "vertical",
+              "width": {
+                "type": "fixed",
+                "value": 370
+              },
+              "content_alignment_horizontal": "center",
+              "items": [
+                {
+                  "type": "separator",
+                  "height": {
+                    "type": "fixed",
+                    "value": 150
+                  },
+                  "alpha": 0
+                },
+                {
+                  "type": "text",
+                  "text": "Приложение ToDo List для Android предоставляет пользователям удобный и современный инструмент для управления своими задачами и планами.",
+                  "text_alignment_horizontal": "center",
+                  "width": {
+                    "type": "match_parent"
+                  },
+                  "paddings": {
+                    "left": 16,
+                    "right": 16
+                  },
+                  "text_color": "#333",
+                  "font_size": 18,
+                  "font_weight": "bold"
+                },
+                {
+                  "type": "separator",
+                  "height": {
+                    "type": "fixed",
+                    "value": 150
+                  },
+                  "alpha": 0
+                },
+                {
+                  "background": [
+                    {
+                      "type": "solid",
+                      "color": "#FF007AFF"
+                    }
+                  ],
+                  "alignment_horizontal": "center",
+                  "text_color": "#fff",
+                  "corners": 20,
+                  "type": "_template_button",
+                  "width": {
+                    "type": "fixed",
+                    "value": 140
+                  },
+                  "actions": [
+                    {
+                      "log_id": "button_next",
+                      "type": "url",
+                      "url": "sample-action://close"
+                    }
+                  ],
+                  "text": "Продолжить",
+                  "paddings": {
+                    "top": 12,
+                    "right": 20,
+                    "bottom": 12,
+                    "left": 20
+                  },
+                  "height": {
+                    "type": "fixed",
+                    "value": 40
+                  }
+                },
+                {
+                  "type": "separator",
+                  "height": {
+                    "type": "fixed",
+                    "value": 40
+                  },
+                  "alpha": 0
+                },
+                {
+                  "type": "text",
+                  "text": "Нажмите на \"Продолжить\", чтобы начать работу с приложением",
+                  "font_size": 14,
+                  "text_alignment_horizontal": "center"
+                },
+                {
+                  "type": "separator",
+                  "height": {
+                    "type": "fixed",
+                    "value": 30
+                  },
+                  "alpha": 0
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "templates": {
+    "_template_button": {
+      "type": "text",
+      "text_alignment_horizontal": "center",
+      "text_alignment_vertical": "center",
+      "border": {
+        "$corner_radius": "corners"
+      },
+      "paddings": {
+        "bottom": 16,
+        "left": 28,
+        "right": 28,
+        "top": 16
+      }
+    }
+  }
+}

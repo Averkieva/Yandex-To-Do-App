@@ -11,6 +11,7 @@ import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.todolistyandex.R
 import com.example.todolistyandex.data.model.ListOfTaskStatus
@@ -48,7 +48,7 @@ fun TaskPriorityAndDate(
                 top.linkTo(parent.top)
             },
             color = CustomTheme.colors.labelPrimary,
-            fontSize = 16.sp
+            style = MaterialTheme.typography.labelMedium
         )
 
         Box(
@@ -68,7 +68,7 @@ fun TaskPriorityAndDate(
                     ListOfTaskStatus.LOW -> stringResource(R.string.low)
                 },
                 color = CustomTheme.colors.labelTertiary,
-                fontSize = 14.sp
+                style = MaterialTheme.typography.labelMedium
             )
 
             DropdownMenu(
@@ -112,7 +112,7 @@ fun TaskPriorityAndDate(
                 top.linkTo(divider.bottom, margin = 16.dp)
             },
             color = CustomTheme.colors.labelPrimary,
-            fontSize = 16.sp
+            style = MaterialTheme.typography.bodyMedium
         )
 
         Row(
@@ -143,7 +143,7 @@ fun TaskPriorityAndDate(
                     top.linkTo(dateLabel.bottom, margin = 4.dp)
                 },
                 color = BlueDark,
-                fontSize = 14.sp
+                style = MaterialTheme.typography.labelMedium
             )
         }
 

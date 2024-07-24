@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,11 +16,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.todolistyandex.ui.theme.CustomTheme
 
 @Composable
-fun ErrorScreen(fetchError: String?, retryAction: () -> Unit) {
+fun ErrorScreen(fetchError: String?, retryAction: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -32,7 +32,7 @@ fun ErrorScreen(fetchError: String?, retryAction: () -> Unit) {
             Text(
                 text = fetchError ?: "Неизвестная ошибка",
                 color = Color.Red,
-                fontSize = 18.sp,
+                style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -47,7 +47,7 @@ fun ErrorScreen(fetchError: String?, retryAction: () -> Unit) {
             ) {
                 Text(
                     text = "Повторить",
-                    fontSize = 16.sp
+                    style = MaterialTheme.typography.labelMedium
                 )
             }
         }

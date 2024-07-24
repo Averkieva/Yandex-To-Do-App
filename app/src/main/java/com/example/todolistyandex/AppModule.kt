@@ -2,6 +2,7 @@ package com.example.todolistyandex
 
 import android.content.Context
 import androidx.room.Room
+import com.example.todolistyandex.data.settings.PreferencesManager
 import com.example.todolistyandex.data.repository.ToDoItemsRepository
 import com.example.todolistyandex.data.room.AppDatabase
 import com.example.todolistyandex.data.room.ToDoItemDao
@@ -41,6 +42,12 @@ object AppModule {
     @Singleton
     fun provideOnNetworkAvailable(repository: ToDoItemsRepository): suspend () -> Unit {
         return { repository.retryPendingOperations() }
+    }
+
+    @Provides
+    @Singleton
+    fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager {
+        return PreferencesManager(context)
     }
 
 }
