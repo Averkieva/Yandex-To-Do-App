@@ -60,7 +60,7 @@ open class ToDoItemsRepository @Inject constructor(private val todoItemDao: ToDo
 
     }
 
-    private fun enqueuePendingOperation(operation: suspend () -> Unit) {
+    fun enqueuePendingOperation(operation: suspend () -> Unit) {
         pendingOperations.add(operation)
     }
 

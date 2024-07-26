@@ -63,10 +63,10 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("com.google.firebase:firebase-database-ktx:21.0.0")
     implementation("androidx.compose.animation:animation-android:1.6.8")
+    implementation("androidx.compose.ui:ui-test-junit4-android:1.6.8")
     testImplementation("junit:junit:4.13.2")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("androidx.fragment:fragment-ktx:1.8.0")
 
     implementation("androidx.navigation:navigation-fragment-ktx:2.6.0")
@@ -84,7 +84,6 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
@@ -140,6 +139,22 @@ dependencies {
     implementation ("com.yandex.div:utils:30.8.0")
     implementation ("com.yandex.div:div-pinch-to-zoom:30.8.0")
     implementation ("com.yandex.div:glide:30.8.0")
+
+    // UI Testing
+    androidTestImplementation ("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
+    androidTestImplementation ("androidx.test.espresso:espresso-contrib:3.4.0")
+    androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.0.5")
+
+    // Unit Testing
+    testImplementation ("junit:junit:4.13.2")
+    testImplementation ("org.mockito:mockito-core:3.11.2")
+    testImplementation ("org.mockito:mockito-inline:3.11.2")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
+
+    // MockWebServer
+    testImplementation ("com.squareup.okhttp3:mockwebserver:4.9.1")
+
 
 
 }

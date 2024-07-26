@@ -26,6 +26,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
@@ -53,20 +56,31 @@ fun DeleteButton(taskText: String, taskViewModel: TaskViewModel, navController: 
         )
     }
 
-    ConstraintLayout(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
         val (deleteButton, deleteText) = createRefs()
 
+        val deleteClickAction = {
+            showSnackbar.value = true
+        }
+
         IconButton(
-            onClick = {
-                showSnackbar.value = true
-            },
+            onClick = deleteClickAction,
             modifier = Modifier
                 .constrainAs(deleteButton) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
+                }
+                .clearAndSetSemantics {
+                    contentDescription = if (taskText.isNotEmpty()) {
+                        "Удалить задачу $taskText"
+                    } else {
+                        "Удалить задачу нельзя, необходимо название задачи для ее удаления"
+                    }
                 }
                 .clickable(
                     interactionSource = interactionSource,
@@ -90,10 +104,18 @@ fun DeleteButton(taskText: String, taskViewModel: TaskViewModel, navController: 
                     top.linkTo(deleteButton.top)
                     bottom.linkTo(deleteButton.bottom)
                 }
+                .clearAndSetSemantics {
+                    contentDescription = if (taskText.isNotEmpty()) {
+                        "Удалить задачу $taskText"
+                    } else {
+                        "Удалить задачу нельзя, необходимо название задачи для ее удаления"
+                    }
+                }
                 .clickable(
                     interactionSource = interactionSource,
-                    indication = rememberRipple(bounded = true, color = deleteColor)
-                ) {}
+                    indication = rememberRipple(bounded = true, color = deleteColor),
+                    onClick = deleteClickAction
+                )
         )
     }
 }
@@ -128,10 +150,15 @@ fun CountdownSnackbar(
     ) {
         Snackbar(
             action = {
-                TextButton(onClick = {
-                    onUndo()
-                    snackbarVisible.value = false
-                }) {
+                TextButton(
+                    onClick = {
+                        onUndo()
+                        snackbarVisible.value = false
+                    },
+                    modifier = Modifier.semantics {
+                        contentDescription = "Кнопка отменить"
+                    }
+                ) {
                     Text(
                         text = "Отменить",
                         color = CustomTheme.colors.colorBlue,
@@ -140,7 +167,11 @@ fun CountdownSnackbar(
                 }
             },
             containerColor = CustomTheme.colors.backPrimary,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier
+                .padding(8.dp)
+                .semantics {
+                    contentDescription = "$message (${countdown.value} секунд)"
+                }
         ) {
             Text(
                 text = "$message (${countdown.value})",
@@ -150,3 +181,5 @@ fun CountdownSnackbar(
         }
     }
 }
+
+

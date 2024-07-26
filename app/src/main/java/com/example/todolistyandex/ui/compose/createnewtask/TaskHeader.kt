@@ -12,6 +12,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
@@ -31,10 +33,14 @@ fun TaskHeader(navController: NavController, taskText: String, taskViewModel: Ta
 
         IconButton(
             onClick = { navController.popBackStack() },
-            modifier = Modifier.constrainAs(closeButton) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-            }
+            modifier = Modifier
+                .constrainAs(closeButton) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                }
+                .clearAndSetSemantics {
+                    contentDescription = "Кнопка вернуться на предыдущий экран"
+                }
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
@@ -51,11 +57,20 @@ fun TaskHeader(navController: NavController, taskText: String, taskViewModel: Ta
                 }
                 navController.popBackStack()
             },
-            modifier = Modifier.constrainAs(saveButton) {
-                end.linkTo(parent.end)
-                top.linkTo(closeButton.top)
-                bottom.linkTo(closeButton.bottom)
-            }
+            enabled = taskText.isNotEmpty(),
+            modifier = Modifier
+                .constrainAs(saveButton) {
+                    end.linkTo(parent.end)
+                    top.linkTo(closeButton.top)
+                    bottom.linkTo(closeButton.bottom)
+                }
+                .clearAndSetSemantics {
+                    contentDescription = if (taskText.isNotEmpty()) {
+                        "Сохранить задачу $taskText"
+                    } else {
+                        "Сохранить задачу нельзя, необходимо название задачи для ее сохранения"
+                    }
+                }
         ) {
             Text(
                 text = stringResource(R.string.save_task),

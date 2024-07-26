@@ -13,6 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.example.todolistyandex.R
@@ -25,14 +27,25 @@ fun Header(
     showAdditionalText: Boolean,
     completedTaskCount: Int,
     showCompletedTasks: Boolean,
-    taskViewModel: ListOfTaskViewModel
+    taskViewModel: ListOfTaskViewModel,
+    completedTaskNames: List<String>
 ) {
+    val myBusinessText = stringResource(id = R.string.my_business)
+    val doneText = stringResource(id = R.string.done, completedTaskCount)
+    val toggleCompletedTasksText = stringResource(id = R.string.toggle_completed_tasks)
+
+    val taskWord = getTaskWord(completedTaskCount)
+
     Text(
-        text = stringResource(id = R.string.my_business),
+        text = myBusinessText,
         color = CustomTheme.colors.labelPrimary,
         style = MaterialTheme.typography.bodyLarge,
         fontSize = textSize,
-        modifier = Modifier.padding(start = 60.dp, top = 82.dp)
+        modifier = Modifier
+            .padding(start = 60.dp, top = 82.dp)
+            .clearAndSetSemantics {
+                contentDescription = myBusinessText
+            }
     )
     if (showAdditionalText) {
         Row(
@@ -42,20 +55,42 @@ fun Header(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(id = R.string.done, completedTaskCount),
+                text = doneText,
                 color = CustomTheme.colors.labelSecondary,
                 style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.clearAndSetSemantics {
+                    contentDescription = "Выполнено $completedTaskCount $taskWord"
+                }
             )
             Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = { taskViewModel.toggleShowCompletedTasks() }) {
+
+            val completedTaskNamesDescription = completedTaskNames.joinToString(", ")
+            IconButton(
+                onClick = { taskViewModel.toggleShowCompletedTasks() },
+                modifier = Modifier.clearAndSetSemantics {
+                    contentDescription = if (showCompletedTasks) {
+                        "Кнопка скрыть выполненные задачи: $completedTaskNamesDescription"
+                    } else {
+                        "Кнопка показать все выполненные задачи"
+                    }
+                }
+            ) {
                 Icon(
                     painter = painterResource(
                         id = if (showCompletedTasks) R.drawable.cell_eye else R.drawable.cell_eye_off
                     ),
-                    contentDescription = stringResource(id = R.string.toggle_completed_tasks),
+                    contentDescription = null,
                     tint = CustomTheme.colors.colorBlue
                 )
             }
         }
+    }
+}
+
+fun getTaskWord(count: Int): String {
+    return when {
+        count % 10 == 1 && count % 100 != 11 -> "задача"
+        count % 10 in 2..4 && (count % 100 !in 12..14) -> "задачи"
+        else -> "задач"
     }
 }
