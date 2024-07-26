@@ -14,6 +14,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.todolistyandex.R
@@ -61,7 +63,9 @@ fun TaskList(
             }
             TextButton(
                 onClick = { navController.navigate("createNewTask/-1/ /NORMAL") },
-                modifier = Modifier.padding(start = 64.dp, top = 16.dp, bottom = 16.dp)
+                modifier = Modifier
+                    .padding(start = 64.dp, top = 16.dp, bottom = 16.dp)
+                    .clearAndSetSemantics { contentDescription = "Кнопка создать новую задачу" }
             ) {
                 Text(
                     text = stringResource(id = R.string.new_task),

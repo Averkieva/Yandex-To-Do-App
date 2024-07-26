@@ -20,7 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -52,10 +53,18 @@ fun TaskItem(
         else -> null
     }
 
+    val priorityDescription = when (task.priority) {
+        ListOfTaskStatus.HIGH -> "высокий"
+        ListOfTaskStatus.LOW -> "низкий"
+        else -> "нормальный"
+    }
+
+    val taskStatusDescription = if (task.completeFlag) "Выполнена" else "Не выполнена"
+
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -67,35 +76,63 @@ fun TaskItem(
             colors = CheckboxDefaults.colors(
                 checkedColor = checkboxColor,
                 uncheckedColor = checkboxColor
-            )
+            ),
+            modifier = Modifier.clearAndSetSemantics {
+                contentDescription = "Чекбокс задачи ${task.text}, статус $taskStatusDescription"
+            }
         )
+        Spacer(modifier = Modifier.width(5.dp))
         if (priorityIcon != null && !task.completeFlag) {
             Icon(
                 painter = painterResource(id = priorityIcon),
-                contentDescription = stringResource(id = R.string.high_priority),
+                contentDescription = "Иконка приоритет ${task.priority.name}",
                 tint = if (task.priority == ListOfTaskStatus.HIGH) Color.Red else Color.Unspecified,
-                modifier = Modifier.padding(end = 3.dp)
+                modifier = Modifier
+                    .padding(end = 3.dp)
+                    .clearAndSetSemantics {
+                        contentDescription = "Приоритет ${priorityDescription} иконка"
+                    }
             )
         }
         Spacer(modifier = Modifier.width(5.dp))
-        TaskTextContent(task = task)
+        TaskTextContent(
+            task = task,
+            priorityDescription = priorityDescription,
+            taskStatusDescription = taskStatusDescription
+        )
         Spacer(modifier = Modifier.weight(1f))
         IconButton(
             onClick = {
                 navController.navigate("createNewTask/${task.id}/${task.text}/${task.priority}")
+            },
+            modifier = Modifier.clearAndSetSemantics {
+                contentDescription = "Кнопка детали задачи ${task.text}"
             }
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.icons),
-                contentDescription = stringResource(id = R.string.info)
+                contentDescription = null,
+                tint = Gray
             )
         }
     }
 }
-@Composable
-fun TaskTextContent(task: ToDoItem) {
-    Box(
 
+@Composable
+fun TaskTextContent(task: ToDoItem, priorityDescription: String, taskStatusDescription: String) {
+    val taskDescription = buildString {
+        append("Задача: ${task.text}, Приоритет: ${priorityDescription}, Статус: ${taskStatusDescription}")
+        if (!task.deadlineComplete.isNullOrEmpty()) {
+            append(", Дедлайн: ${task.deadlineComplete}")
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .clickable(onClick = {})
+            .clearAndSetSemantics {
+                contentDescription = taskDescription
+            }
     ) {
         Column {
             Text(
@@ -114,13 +151,13 @@ fun TaskTextContent(task: ToDoItem) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.calendar),
-                        contentDescription = stringResource(id = R.string.calendar),
+                        contentDescription = "Иконка календаря",
                         tint = CustomTheme.colors.labelSecondary,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Дата: ${task.deadlineComplete}",
+                        text = "Date: ${task.deadlineComplete}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray
                     )

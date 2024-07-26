@@ -41,7 +41,16 @@ fun TaskListContent(
             }
         }
 
-        Header(textSize, showAdditionalText, completedTaskCount, showCompletedTasks, taskViewModel)
+        val completedTaskNames = tasks.filter { it.completeFlag }.map { it.text }
+
+        Header(
+            textSize = textSize,
+            showAdditionalText = showAdditionalText,
+            completedTaskCount = completedTaskCount,
+            showCompletedTasks = showCompletedTasks,
+            taskViewModel = taskViewModel,
+            completedTaskNames = completedTaskNames
+        )
 
         TaskList(
             tasks = tasks,

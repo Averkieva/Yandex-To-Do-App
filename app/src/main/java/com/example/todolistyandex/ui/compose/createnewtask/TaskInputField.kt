@@ -20,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import com.example.todolistyandex.R
 import com.example.todolistyandex.ui.theme.BlueDark
@@ -54,9 +56,19 @@ fun TaskInputField(taskText: String, onTaskTextChange: (String) -> Unit) {
                 onValueChange = onTaskTextChange,
                 modifier = Modifier
                     .fillMaxSize()
+                    .clearAndSetSemantics {
+                        contentDescription = if (taskText.isEmpty()) {
+                            "Поле ввода. Напишите что нужно сделать"
+                        } else {
+                            "Поле ввода. Текущая задача: $taskText"
+                        }
+                    }
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = rememberRipple(bounded = true, color = CustomTheme.colors.labelPrimary)
+                        indication = rememberRipple(
+                            bounded = true,
+                            color = CustomTheme.colors.labelPrimary
+                        )
                     ) {},
                 textStyle = LocalTextStyle.current.copy(
                     color = CustomTheme.colors.labelPrimary,

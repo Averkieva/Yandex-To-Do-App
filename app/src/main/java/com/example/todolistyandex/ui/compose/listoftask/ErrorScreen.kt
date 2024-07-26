@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -21,7 +23,10 @@ import com.example.todolistyandex.ui.theme.CustomTheme
 @Composable
 fun ErrorScreen(fetchError: String?, retryAction: () -> Unit, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier)
+            .clearAndSetSemantics { contentDescription = "Экран ошибки" },
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -35,7 +40,11 @@ fun ErrorScreen(fetchError: String?, retryAction: () -> Unit, modifier: Modifier
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .clearAndSetSemantics {
+                        contentDescription = fetchError ?: "Неизвестная ошибка"
+                    }
             )
             Button(
                 onClick = retryAction,
@@ -43,7 +52,9 @@ fun ErrorScreen(fetchError: String?, retryAction: () -> Unit, modifier: Modifier
                     containerColor = CustomTheme.colors.colorBlue,
                     contentColor = Color.White
                 ),
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .clearAndSetSemantics { contentDescription = "Повторить действие" }
             ) {
                 Text(
                     text = "Повторить",
@@ -53,3 +64,4 @@ fun ErrorScreen(fetchError: String?, retryAction: () -> Unit, modifier: Modifier
         }
     }
 }
+

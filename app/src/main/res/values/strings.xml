@@ -22,5 +22,11 @@
     <string name="high_priority">high_priority</string>
     <string name="low_priority">low_priority</string>
     <string name="choose_priority">Выбрать приоритет</string>
+    <string name="delete_task">Удалить задачу</string>
+    <string name="delete_task_disabled">Удалить задачу нельзя</string>
+    <string name="close_button">Кнопка закрытия экрана</string>
+    <string name="save_button_enabled_description">Сохранение задачи доступно</string>
+    <string name="save_button_disabled_description">Сохранение задачи недоступно, введите название задачи</string>
+
 
 </resources>

@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.todolistyandex.R
@@ -48,7 +50,7 @@ fun TaskPriorityAndDate(
                 top.linkTo(parent.top)
             },
             color = CustomTheme.colors.labelPrimary,
-            style = MaterialTheme.typography.labelMedium
+            style = MaterialTheme.typography.bodyMedium
         )
 
         Box(
@@ -60,6 +62,13 @@ fun TaskPriorityAndDate(
                 .background(CustomTheme.colors.backPrimary)
                 .clickable { onPriorityDropdownExpandedChange(true) }
                 .padding(8.dp)
+                .clearAndSetSemantics {
+                    contentDescription = when (priority) {
+                        ListOfTaskStatus.HIGH -> "Высокая важность, выбрано"
+                        ListOfTaskStatus.NORMAL -> "Нормальная важность, выбрано"
+                        ListOfTaskStatus.LOW -> "Низкая важность, выбрано"
+                    }
+                }
         ) {
             Text(
                 text = when (priority) {
@@ -81,6 +90,13 @@ fun TaskPriorityAndDate(
                         onClick = {
                             onPriorityChange(item)
                             onPriorityDropdownExpandedChange(false)
+                        },
+                        modifier = Modifier.clearAndSetSemantics {
+                            contentDescription = when (item) {
+                                ListOfTaskStatus.HIGH -> "Высокая важность"
+                                ListOfTaskStatus.NORMAL -> "Нормальная важность"
+                                ListOfTaskStatus.LOW -> "Низкая важность"
+                            }
                         }
                     ) {
                         Text(
@@ -131,7 +147,14 @@ fun TaskPriorityAndDate(
                     checkedTrackColor = BlueLight,
                     uncheckedThumbColor = CustomTheme.colors.backElevated,
                     uncheckedTrackColor = CustomTheme.colors.supportOverlay
-                )
+                ),
+                modifier = Modifier.clearAndSetSemantics {
+                    contentDescription = if (isDeadlineSet) {
+                        "Дедлайн установлен. Дата дедлайна: $deadlineComplete"
+                    } else {
+                        "Дедлайн не установлен"
+                    }
+                }
             )
         }
 
@@ -158,3 +181,4 @@ fun TaskPriorityAndDate(
         )
     }
 }
+

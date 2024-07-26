@@ -54,7 +54,10 @@
                     "value": 120
                   },
                   "alignment_horizontal": "center",
-                  "content_alignment_vertical": "top"
+                  "content_alignment_vertical": "top",
+                  "accessibility": {
+                    "description": "Иконка приложения: галочка выполненной задачи"
+                  }
                 },
                 {
                   "type": "separator",
@@ -146,6 +149,9 @@
                   "height": {
                     "type": "fixed",
                     "value": 40
+                  },
+                  "accessibility": {
+                    "description": "Кнопка Продолжить для начала работы с приложением"
                   }
                 },
                 {
@@ -160,7 +166,10 @@
                   "type": "text",
                   "text": "Нажмите на \"Продолжить\", чтобы начать работу с приложением",
                   "font_size": 14,
-                  "text_alignment_horizontal": "center"
+                  "text_alignment_horizontal": "center",
+                  "accessibility": {
+                    "description": "Инструкция: Нажмите на \"Продолжить\", чтобы начать работу с приложением"
+                  }
                 },
                 {
                   "type": "separator",
